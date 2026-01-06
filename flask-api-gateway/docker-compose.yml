@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  flask-proxy:
+    build: .
+    container_name: flask-proxy
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - wireguard-net
+
+networks:
+  wireguard-net:
+    external: true
