@@ -99,6 +99,33 @@ def single_submission(submission_id):
 
 
 # -----------------------------
+# GET attachment (images/files)
+# -----------------------------
+@app.route("/v1/projects/3/forms/zups_beneficiary_form/submissions/<submission_id>/attachments/<filename>", methods=["GET"])
+def get_attachment(submission_id, filename):
+    auth = get_auth_headers()
+    if not auth:
+        return {"error": "Authorization missing (provide Cookie or Authorization header)"}, 401
+
+    try:
+        resp = requests.get(
+            f"{ODK_BASE}/v1/projects/3/forms/zups_beneficiary_form/submissions/{submission_id}/attachments/{filename}",
+            headers=auth,
+            verify=True,
+            stream=True
+        )
+        
+        # Forward the response with appropriate content type
+        return Response(
+            resp.content,
+            status=resp.status_code,
+            content_type=resp.headers.get("Content-Type", "application/octet-stream")
+        )
+    except Exception as e:
+        return {"error": str(e)}, 502
+
+
+# -----------------------------
 # POST submission (XML + attachments)
 # -----------------------------
 @app.route("/v1/projects/3/forms/zups_beneficiary_form/submissions", methods=["POST"])
